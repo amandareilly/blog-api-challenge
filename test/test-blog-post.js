@@ -84,4 +84,19 @@ describe('Blog Posts', function() {
                 expect(res).to.have.status(204);
             });
     });
+
+    // DELETE /blog-posts/:id
+    // 1. Get an item to delete
+    // 2. should return a 204
+    it('should delete posts on DELETE', function() {
+        return chai.request(app)
+            .get('/blog-posts')
+            .then(function(res) {
+                return chai.request(app)
+                    .delete(`/blog-posts/${res.body[0].id}`);
+            })
+            .then(function(res) {
+                expect(res).to.have.status(204);
+            });
+    });
 });
