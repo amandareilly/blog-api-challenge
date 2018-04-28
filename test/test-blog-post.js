@@ -1,23 +1,19 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-console.log(1);
+
 const { app, runServer, closeServer } = require('../server');
-console.log(2);
+
 const expect = chai.expect;
-console.log(3);
+
 chai.use(chaiHttp);
-console.log(4);
 describe('Blog Posts', function() {
-    console.log(5);
     //run server
     before(function() {
-        console.log(6);
         return runServer();
     });
 
     //close server after tests run
     after(function() {
-        console.log(7);
         return closeServer();
     });
 
@@ -35,12 +31,34 @@ describe('Blog Posts', function() {
                 expect(res).to.be.json;
                 expect(res.body).to.be.a('array');
                 expect(res.body.length).to.be.at.least(1);
-                console.log(8);
                 const expectedKeys = ['id', 'title', 'content', 'author', 'publishDate'];
                 res.body.forEach(function(item) {
                     expect(item).to.be.a('object');
                     expect(item).to.include.keys(expectedKeys);
                 });
+            });
+    });
+
+    // POST /blog-posts
+    // 1. Add an item
+    // 2. Should return 201
+    // 3. Should return a json object
+    // 4. Response should include keys `id`, `title`, `content`,
+    //    `author`, and `publishDate`
+    // 5. `id` should not be null
+    // 6. Response body should be deep equal to the item passed to post
+    //    plus the returned id and publishDate
+    it('should add a blog post on POST', function() {
+        const newPost = { title: 'a title', content: 'some content', author: 'author name' };
+        return chai.request(app)
+            .post('/blog-posts')
+            .send(newPost)
+            .then(function(res) {
+                expect(res).to.have.status(201);
+                expect(res).to.be.json;
+                expect(res.body).to.be.a('object');
+                expect(res.body.id).to.not.equal(null);
+                expect(res.body).to.deep.equal(Object.assign(newPost, { id: res.body.id, publishDate: res.body.publishDate }));
             });
     });
 });
