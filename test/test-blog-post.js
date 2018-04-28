@@ -61,4 +61,27 @@ describe('Blog Posts', function() {
                 expect(res.body).to.deep.equal(Object.assign(newPost, { id: res.body.id, publishDate: res.body.publishDate }));
             });
     });
+
+    // PUT /blog-posts/:id
+    // 1. Get an item to update.
+    // 2. should return a 204
+    it('should update a blog post on PUT', function() {
+        const updateData = {
+            title: 'new title',
+            content: 'fizz bang',
+            author: 'new author'
+        };
+
+        return chai.request(app)
+            .get('/blog-posts')
+            .then(function(res) {
+                updateData.id = res.body[0].id;
+                return chai.request(app)
+                    .put(`/blog-posts/${updateData.id}`)
+                    .send(updateData);
+            })
+            .then(function(res) {
+                expect(res).to.have.status(204);
+            });
+    });
 });
