@@ -1,0 +1,9 @@
+language: node_js
+node_js: node
+deploy:
+  provider: heroku
+  api_key:
+    secure: dYy0Yz2VMornBJ+G+KvGAEumkk0xzMRdMVaQz6IooitetmF3sXecLUw8DSlFWq58350DJ8JcFdVhMfogdnacJy8SyFL72aDW7FzvUvL78rQutbdFqsdmpajRbc8LYXpD7U2x39WqIc6ev7kCL6tM29kdvlH3T9RbFYRRe/31U4qwXNqg7trdhtKh82qouxxdM/YtnkxDnWnNa+n9CmRJTv+KSddwWl3EwBmLZYg6sLkvUirDwdsTC6K6C+PZw+pmnU9NQqV+u7561Fxo79ilqjNXv35oJccJ7wFYyPHZJEfNwlhx0jtTSmDM+1ejFJ1duMLYtU0uQIfSJnD/ZCZ3ZrUZG819+T5MyBuD8/A8nG7YsrWiMylrJb7NquT7fd4eJUJyG7ZV8oUGEbOxWSY4TTl2UjeW5COaqRtQQguMQkwWCc/BlsNc1BVbW6vluanFXjQAXR4i5eKhd9kRoNnz2mF5Ox3m88d7k3xqqz+cfjyTg2KALcdx+7fWAcfHE6HK5qOjULAYMhLf0fQ62jIQpRO5Qdc6STsj/utPKXVk34xUtTsuglCFqYm59M8rJ7BmwHmbi43Hf4MREf0JKyurs/4y9haARQMqp8emjTTvwbDybov5gXT0jYZ+QMgwL0OHf8p0HoUO5JIpX7VVrHHy6BZ3lRXgJM+inkED0y1PeTw=
+  app: cryptic-peak-48680
+  on:
+    repo: amandareilly/blog-api-challenge
