@@ -1,18 +1,15 @@
 const express = require('express');
 const morgan = require('morgan');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 // configure mongoose to use ES6 promises
-mongoose.Promise = global.promise;
+mongoose.Promise = global.Promise;
 
 const { PORT, DATABASE_URL } = require('./config');
-const { BlogPost } = require('./models');
 const blogPostRouter = require('./blogPostRouter');
 
 const app = express();
 app.use(morgan('common'));
-app.use(bodyParser.json());
 app.use('/blog-posts', blogPostRouter);
 
 // catch-all

@@ -1,20 +1,35 @@
+'use strict';
+
 const express = require('express');
 const router = express.Router();
 
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
-const { BlogPosts } = require('./models');
 
-//create a few blog posts so we have something
-//to work with
-BlogPosts.create('My Title 1', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates amet earum mollitia, repellat maxime repellendus ex debitis? Similique cupiditate tenetur porro voluptas iusto magnam explicabo commodi distinctio? Ut, ipsam voluptates?', 'Anna Andrews');
-BlogPosts.create('My Title 2', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates amet earum mollitia, repellat maxime repellendus ex debitis? Similique cupiditate tenetur porro voluptas iusto magnam explicabo commodi distinctio? Ut, ipsam voluptates?', 'Billy Burns');
-BlogPosts.create('My Title 3', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates amet earum mollitia, repellat maxime repellendus ex debitis? Similique cupiditate tenetur porro voluptas iusto magnam explicabo commodi distinctio? Ut, ipsam voluptates?', 'Carrie Crawford');
+const { PORT, DATABASE_URL } = REQUIRE('./config');
+const { BlogPost } = require('./models');
 
 //get all blog posts
 router.get('/', (req, res) => {
-    res.json(BlogPosts.get());
+    BlogPost
+        .find()
+        .then(BlogPosts => res.json(BlogPosts.map(blogPost => blogPost.serializeWithId())))
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ message: 'Internal server error' })
+        });
+});
+
+//get a specific blog post
+router.get('/:id', jsonParser, (req, res) => {
+    BlogPost
+        .findById(req.params.id)
+        .then(blogPost => res.json(blogPost.serialize()))
+        .catch(err => {
+            console.err(err);
+            res.status(500).json({ message: 'Internal server error' })
+        });
 });
 
 //create new blog post
@@ -31,9 +46,9 @@ router.post('/', jsonParser, (req, res) => {
     }
     let item;
     if (req.body.hasOwnProperty('publishDate')) {
-        item = BlogPosts.create(req.body.title, req.body.content, req.body.author, req.body.publishDate);
+        item = BlogPost.create(req.body.title, req.body.content, req.body.author, req.body.publishDate);
     } else {
-        item = BlogPosts.create(req.body.title, req.body.content, req.body.author);
+        item = BlogPost.create(req.body.title, req.body.content, req.body.author);
     }
     res.status(201).json(item);
 });
@@ -58,7 +73,7 @@ router.put('/:id', jsonParser, (req, res) => {
     }
 
     console.log(`Updating blog post \`${req.params.id}\``);
-    const updatedPost = BlogPosts.update({
+    const updatedPost = BlogPost.update({
         id: req.params.id,
         title: req.body.title,
         author: req.body.author,
@@ -70,7 +85,7 @@ router.put('/:id', jsonParser, (req, res) => {
 
 //delete existing blog post
 router.delete('/:id', (req, res) => {
-    BlogPosts.delete(req.params.id);
+    BlogPost.delete(req.params.id);
     console.log(`Deleted blog post \`${req.params.id}\``);
     res.status(204).end();
 });
