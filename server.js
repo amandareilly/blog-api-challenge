@@ -1,13 +1,24 @@
 const express = require('express');
 const morgan = require('morgan');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
-const app = express();
+// configure mongoose to use ES6 promises
+mongoose.Promise = global.promise;
 
+const { PORT, DATABASE_URL } = require('./config');
+const { BlogPost } = require('./models');
 const blogPostRouter = require('./blogPostRouter');
 
+const app = express();
 app.use(morgan('common'));
-
+app.use(bodyParser.json());
 app.use('/blog-posts', blogPostRouter);
+
+// catch-all
+app.use('*', function(req, res) {
+    res.status(404).json({ message: 'Not Found' });
+})
 
 // server object for runServer and closeServer functions
 let server;
