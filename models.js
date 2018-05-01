@@ -11,8 +11,16 @@ const blogPostSchema = mongoose.Schema({
         firstName: { type: String, required: true },
         lastName: { type: String, required: true }
     },
-    timestamps: { createdAt: 'created' }
+    created: { type: Date, required: true }
 });
+
+// set timestamp if this is a new entry
+blogPostSchema.pre('save', function(next) {
+    if (!this.created) {
+        this.created = new Date;
+    }
+    next();
+})
 
 // virtual for author name (getter)
 blogPostSchema.virtual('authorName').get(function() {

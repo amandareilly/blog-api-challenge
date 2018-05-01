@@ -10,7 +10,7 @@ const blogPostRouter = require('./blogPostRouter');
 
 const app = express();
 app.use(morgan('common'));
-app.use('/blog-posts', blogPostRouter);
+app.use('/posts', blogPostRouter);
 
 // catch-all
 app.use('*', function(req, res) {

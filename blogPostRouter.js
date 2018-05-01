@@ -6,8 +6,7 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
-
-const { PORT, DATABASE_URL } = REQUIRE('./config');
+const { PORT, DATABASE_URL } = require('./config');
 const { BlogPost } = require('./models');
 
 //get all blog posts
