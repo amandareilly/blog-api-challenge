@@ -1,26 +1,19 @@
 'use strict';
 
 const mongoose = require('mongoose');
-
-const uuid = require('uuid');
+mongoose.set('debug', true);
 
 const blogPostSchema = mongoose.Schema({
-    title: { type: String, required: true },
-    content: { type: String, required: true },
-    author: {
-        firstName: { type: String, required: true },
-        lastName: { type: String, required: true }
-    },
-    created: { type: Date, required: true }
-});
-
-// set timestamp if this is a new entry
-blogPostSchema.pre('save', function(next) {
-    if (!this.created) {
-        this.created = new Date;
+        title: { type: String, required: true },
+        content: { type: String, required: true },
+        author: {
+            firstName: { type: String, required: true },
+            lastName: { type: String, required: true }
+        },
+        created: { type: Date, required: true, default: new Date() }
     }
-    next();
-})
+    // , { collection: 'blog-posts' }
+);
 
 // virtual for author name (getter)
 blogPostSchema.virtual('authorName').get(function() {

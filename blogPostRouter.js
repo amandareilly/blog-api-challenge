@@ -11,9 +11,10 @@ const { BlogPost } = require('./models');
 
 //get all blog posts
 router.get('/', (req, res) => {
+    console.log('get all posts identified');
     BlogPost
         .find()
-        .then(BlogPosts => res.json(BlogPosts.map(blogPost => blogPost.serializeWithId())))
+        .then(BlogPost => res.json(BlogPost.map(post => post.serializeWithId())))
         .catch(err => {
             console.error(err);
             res.status(500).json({ message: 'Internal server error' })
@@ -43,13 +44,37 @@ router.post('/', jsonParser, (req, res) => {
             return res.status(400).send(message);
         }
     }
-    let item;
-    if (req.body.hasOwnProperty('publishDate')) {
-        item = BlogPost.create(req.body.title, req.body.content, req.body.author, req.body.publishDate);
-    } else {
-        item = BlogPost.create(req.body.title, req.body.content, req.body.author);
+    //ensure `author` is an object and contains `firstName` and `lastName`
+    const authorRequiredFields = ['firstName', 'lastName'];
+    if (!typeof(req.body.author) === "object") {
+        const message = `The \`author\` parameter must be an object with keys \`firstName\` and \`lastName\`.`;
+        console.error(message);
+        return res.status(400).send(message);
     }
-    res.status(201).json(item);
+    for (let i = 0; i < authorRequiredFields.length; i++) {
+        const field = authorRequiredFields[i];
+        if (!(field in req.body.author)) {
+            const message = `Missing \`${field}\` in \`author\` parameter.`;
+            console.error(message);
+            return res.status(400).send(message);
+        }
+    }
+
+    //create item and persist it
+    // const item = BlogPost.create(req.body.title, req.body.content, req.body.author);
+    BlogPost.create({
+            title: req.body.title,
+            content: req.body.content,
+            author: {
+                firstName: req.body.author.firstName,
+                lastName: req.body.author.lastName
+            }
+        })
+        .then(post => res.status(201).json(post.serialize()))
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ message: 'Internal server error' });
+        });
 });
 
 //update existing blog post
@@ -70,15 +95,32 @@ router.put('/:id', jsonParser, (req, res) => {
         console.error(message);
         return res.status(400).send(message);
     }
+    //ensure `author` is an object and contains `firstName` and `lastName`
+    const authorRequiredFields = ['firstName', 'lastName'];
+    if (!typeof(req.body.author) === "object") {
+        const message = `The \`author\` parameter must be an object with keys \`firstName\` and \`lastName\`.`;
+        console.error(message);
+        return res.status(400).send(message);
+    }
+    for (let i = 0; i < authorRequiredFields.length; i++) {
+        const field = authorRequiredFields[i];
+        if (!(field in req.body.author)) {
+            const message = `Missing \`${field}\` in \`author\` parameter.`;
+            console.error(message);
+            return res.status(400).send(message);
+        }
+    }
 
     console.log(`Updating blog post \`${req.params.id}\``);
     const updatedPost = BlogPost.update({
-        id: req.params.id,
-        title: req.body.title,
-        author: req.body.author,
-        content: req.body.content
-    });
-    console.log(updatedPost);
+            id: req.params.id,
+            title: req.body.title,
+            author: req.body.author,
+            content: req.body.content
+        },
+        function(err, numAffected) {
+            if (err) console.log(err);
+        });
     res.status(204).end();
 })
 
